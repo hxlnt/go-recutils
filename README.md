@@ -26,7 +26,18 @@ TODO
 
 ### recfmt
 
-TODO
+**Recfmt(records []Record, template string, templateIsFilename bool)** formats a given set of records and returns an array of strings, one for each record, that have been passed through the template. If `template` is a filename, set `templateIsFilename` to `true`. Records have the following signature:
+
+```go
+type Record struct {
+	Fields []Fields
+}
+
+type Fields struct {
+	FieldName  string
+	FieldValue string
+}
+```
 
 ### recinf 
 
