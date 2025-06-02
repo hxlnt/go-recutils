@@ -50,7 +50,6 @@ func Recdel(filename string, rectype string, expr string, q string, n []int, ran
 	options = strings.TrimSpace(options)
 	params = strings.TrimSpace(params)
 	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("recdel %s %s %s", options, params, filename))
-	fmt.Println(recdelCmd.String())
 	err := recdelCmd.Run()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
