@@ -38,7 +38,7 @@ func Recinf(filename string) ([]RecinfResponse, error) {
 	if error != nil {
 		return []RecinfResponse{}, error
 	} else {
-		recinfRecCmd := exec.Command("bash", "-c", "recinf", filename)
+		recinfRecCmd := exec.Command("recinf", filename)
 		output, err := recinfRecCmd.Output()
 		if err != nil {
 			return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", err)

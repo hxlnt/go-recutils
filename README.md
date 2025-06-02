@@ -1,4 +1,4 @@
-# go-recuitls
+# go-recutils
 Go wrapper for interacting with [recutils](https://www.gnu.org/software/recutils/manual/recutils.html) with some niceties for the modern world like providing structured return values.
 
 ## Usage
