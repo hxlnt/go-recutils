@@ -18,7 +18,10 @@ TODO
 
 ### recdel
 
-TODO
+**Recdel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, comment bool, force bool, ignoreExternal bool)** runs the specified `recdel` operation and returns an error if warranted. To avoid issues with values containing single quotemarks, expressions passed into `expr` may need doubly-escaped quotemarks, *e.g.,*:
+```go
+rec.Recdel("test.rec", "books", "Title=\\\"American Girl's Handy Book, The\\\"", "", []int{}, 0, true, true, false, false)
+```
 
 ### recfix
 
@@ -77,3 +80,5 @@ TODO
 TODO
 
 ### recset
+
+TODO
