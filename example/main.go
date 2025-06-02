@@ -16,7 +16,9 @@ func main() {
 	fmt.Println("3) recfmt")
 	fmt.Println("4) recinf")
 	fmt.Println("5) recins")
-	fmt.Println("6) Exit")
+	fmt.Println("6) recsel")
+	fmt.Println("7) recset")
+	fmt.Println("8) Exit")
 	fmt.Print("Your choice: ")
 	fmt.Scan(&input)
 
@@ -98,6 +100,17 @@ func main() {
 		fmt.Println("\nNew books count: ", response2[0].Count)
 		fmt.Println("\n✅ Recins completed successfully.\n")
 	case "6":
+		fmt.Println("This function is not implemented yet.")
+		main()
+	case "7":
+		err := rec.Recset("test.rec", "books", "", "", []int{}, 0, false, []string{"Status"}, rec.S, "Read", false, false)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("\n✅ Recset completed successfully.\n")
+		main()
+	case "8":
 		os.Exit(0)
 	default:
 		fmt.Println("Invalid input.")

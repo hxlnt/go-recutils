@@ -1,6 +1,7 @@
 package recutils
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -54,10 +55,12 @@ func Recins(filename string, rectype string, expr string, q string, n []int, ran
 	}
 	options = strings.TrimSpace(options)
 	params = strings.TrimSpace(params)
-	recinsCmd := exec.Command("bash", "-c", fmt.Sprintf("recins %s %s %s", options, params, filename))
+	var stderr bytes.Buffer
+	recinsCmd := exec.Command("bash", "-c", fmt.Sprintf("recins %s %s %s %s", options, params, filename, "--verbose"))
+	recinsCmd.Stderr = &stderr
 	err := recinsCmd.Run()
 	if err != nil {
-		return fmt.Errorf("recins command failed: %v", err)
+		return fmt.Errorf("recins failed:\n%s", stderr.String())
 	}
 	return nil
 }

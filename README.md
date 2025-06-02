@@ -1,5 +1,5 @@
 # go-recutils
-Go wrapper for interacting with [recutils](https://www.gnu.org/software/recutils/manual/recutils.html) with some niceties for the modern world like providing structured return values.
+Go wrapper for interacting with [recutils](https://www.gnu.org/software/recutils/manual/recutils.html) with some niceties for the modern world like providing structured return values and errors.
 
 ## Usage
 
@@ -60,10 +60,20 @@ type Rectype struct {
 As this object returns both descriptors and counts, there is no need to use `recinf` flags `-d` and `-n`.
 
 ### recins
-TODO
+**Recins(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, record Record, force bool, ignoreExternal bool, ignoreAuto bool)** inserts a record with the following signature:
+```go
+type Record struct {
+	Fields []Fields
+}
+
+type Fields struct {
+	FieldName  string
+	FieldValue string
+}
+```
 
 ### recsel
 TODO
 
 ### recset
-TODO
+**func Recset(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, fields []string, fieldaction FieldAction, actionvalue string, force bool, ignoreExternal bool)** performs recset. Valid FieldAction values are `s`, `a`, `S`, `r`, `d`, and `c`, corresponding to the field action flags for `recset`. 
