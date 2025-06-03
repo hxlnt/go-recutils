@@ -4,38 +4,25 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
-// type Fields struct {
-// 	FieldName  string
-// 	FieldValue string
-// }
-
-// type Record struct {
-// 	Fields []Fields
-// }
-
-func Recfmt(records []Record, template string, templateIsFilename bool) ([]string, error) {
-	var responseStr []string
-	for _, record := range records {
-		var fieldStr, params string
-		for _, field := range record.Fields {
-			fieldStr += fmt.Sprintf("%s: %s%s", field.Name, field.Value, "\n")
-		}
-		if templateIsFilename {
-			params = "--f " + template
-		} else {
-			params = template
-		}
-		var stderr bytes.Buffer
-		recfmtCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfmt %s", fieldStr, params))
-		recfmtCmd.Stderr = &stderr
-		output, err := recfmtCmd.Output()
-		if err != nil {
-			fmt.Println("Error executing recfmt command:", err)
-			return responseStr, fmt.Errorf("failed to execute recfmt command: %w", stderr.String())
-		}
-		responseStr = append(responseStr, string(output))
+func (recs RecordSet) Fmt(template string, templateIsFilename bool) ([]string, error) {
+	recsStr := recs2string(recs.Records)
+	var stderr bytes.Buffer
+	var params string
+	var errdetail error
+	if templateIsFilename {
+		params = "--f " + template
+	} else {
+		params = template
 	}
-	return responseStr, nil
+	recfmtCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfmt %s", recsStr, params))
+	recfmtCmd.Stderr = &stderr
+	result, err := recfmtCmd.Output()
+	response := strings.Split(string(result), "\n\n")
+	if err != nil {
+		errdetail = fmt.Errorf("Failed to execute recfmt command:\n%s", stderr.String())
+	}
+	return response, errdetail
 }

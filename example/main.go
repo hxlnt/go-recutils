@@ -13,11 +13,11 @@ func main() {
 	fmt.Println("\n1) recfix: Check test.rec for errors")
 	fmt.Println("2) recinf: Get information about test.rec")
 	fmt.Println("3) recsel: Select first TV show record in test.rec")
-	fmt.Println("4) recdel: Delete 'Junkyard Jam Band' from books in test.rec")
+	fmt.Println("4) recdel: Delete 'Junkyard Jam Band' from test.rec")
 	fmt.Println("5) recins: Re-add 'Junkyard Jam Band' to test.rec")
-	fmt.Println("6) recset: Set 'Status' of all books in test.rec to 'Read'")
-	fmt.Println("7) recfmt: Format TV shows in test.rec using template.rect")
-	fmt.Print("\nEnter the number of a function to test: ")
+	fmt.Println("6) recset: Set Status of all books in test.rec to 'Read'")
+	fmt.Println("7) recfmt: Format TV show records using template.rect")
+	fmt.Print("\nEnter the number of a function to test ('q' to quit): ")
 	fmt.Scan(&input)
 
 	file := rec.Recfile{
@@ -46,28 +46,35 @@ func main() {
 		fmt.Printf("✓ Recfix found no validation errors in %s.\n", file.Path)
 		main()
 	case "7":
-		records := []rec.Record{
-			{
-				Fields: []rec.Field{
-					{Name: "Title", Value: "American Girl's Handy Book, The"},
-					{Name: "Status", Value: "In-reading-queue"},
+		exampleRecords := rec.RecordSet{
+			Records: []rec.Record{
+				{
+					Fields: []rec.Field{
+						{Name: "Title", Value: "Jem and the Holograms"},
+						{Name: "SeasonCount", Value: "3"},
+						{Name: "Id", Value: "2"},
+					},
 				},
-			},
-			{
-				Fields: []rec.Field{
-					{Name: "Title", Value: "Arduino for Musicians"},
-					{Name: "Status", Value: "Not-reading"},
+				{
+					Fields: []rec.Field{
+						{Name: "Title", Value: "My Little Pony 'n Friends"},
+						{Name: "SeasonCount", Value: "2"},
+						{Name: "Id", Value: "3"},
+					},
 				},
 			},
 		}
-		strings, err := rec.Recfmt(records, "template.rect", true)
+		recStr, err := json.MarshalIndent(exampleRecords.Records, "", "  ")
+		fmt.Printf("\nRecords to format:\n%s", recStr)
+		result, err := exampleRecords.Fmt("template.rect", true)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
 		}
-		fmt.Println(strings[0])
-		fmt.Println(strings[1])
-		fmt.Println("\n✓ Recfmt completed successfully.\n")
+		fmt.Println("\nFormatted output:\n")
+		for _, line := range result {
+			fmt.Println(line)
+		}
+		fmt.Println("\n⏺ Recfmt command complete.")
 		main()
 	case "2":
 		response, err := rec.Recinf("test.rec")

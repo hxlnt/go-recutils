@@ -27,7 +27,7 @@ func (recs RecordSet) Del(removeOrComment DeleteStyle, params SelectionParams, o
 	recdelCmd.Stderr = &stderr
 	result, err := recdelCmd.Output()
 	if err != nil {
-		response.Error = fmt.Errorf("recdel command failed with exit code %s", stderr.String())
+		response.Error = fmt.Errorf("Failed to execute recdel command:\n%s", stderr.String())
 	}
 	response.Records = string2recs(string(result))
 	return response
@@ -48,7 +48,7 @@ func (recf Recfile) Del(removeOrComment DeleteStyle, params SelectionParams, opt
 	recdelCmd.Stderr = &stderr
 	err = recdelCmd.Run()
 	if err != nil {
-		response.Error = fmt.Errorf("recdel command failed with exit code %s", stderr.String())
+		response.Error = fmt.Errorf("Failed to execute recdel command:\n%s", stderr.String())
 	}
 	return response
 }
