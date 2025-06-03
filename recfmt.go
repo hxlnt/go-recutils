@@ -14,7 +14,7 @@ func (recs RecordSet) Fmt(template string, templateIsFilename bool) (string, err
 	if templateIsFilename {
 		params = "--f " + template
 	} else {
-		params = template
+		params = "\"" + template + "\""
 	}
 	recfmtCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfmt %s", recsStr, params))
 	recfmtCmd.Stderr = &stderr

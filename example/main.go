@@ -90,6 +90,23 @@ func main() {
 		fmt.Printf("\n✓ Recfix found no validation errors in %s.", file.Path)
 		fmt.Println("\n⏺ Recfix command complete.")
 		main()
+	case "3":
+		response := file.Sel(rec.SortBy(nil), rec.GroupBy(nil), rec.SelectionParams{Type: "tvshows", Number: []int{1}}, rec.DefaultOptions)
+		if response.Error != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", response.Error)
+		} else {
+			fmt.Println("\nSelected records from test.rec:\n")
+			fmt.Println(rec.Recs2string(response.Records)) // Print the first record
+			//fmt.Println(rec.Recs2string(response.Records))
+			response2 := response.Fix(rec.Check, rec.DefaultOptions)
+			if response2.Error != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", response2.Error)
+			} else {
+				fmt.Println("✓ Recsel found no validation errors in selected records.")
+			}
+		}
+		fmt.Println("⏺ Recsel command complete.")
+		main()
 	case "5":
 		info, err := file.Inf()
 		if err != nil {
@@ -120,31 +137,21 @@ func main() {
 		}
 		fmt.Println("\n⏺ Recins command complete.")
 		main()
-	case "3":
-		response := file.Sel(rec.SortBy(nil), rec.GroupBy(nil), rec.SelectionParams{Type: "tvshows", Number: []int{1}}, rec.DefaultOptions)
+	case "6":
+		response := file.Set([]string{"Status"}, rec.FieldAction{ActionType: "SetAdd", ActionValue: "Read"}, rec.SelectionParams{Type: "books"}, rec.DefaultOptions)
 		if response.Error != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", response.Error)
 		} else {
-			fmt.Println("\nSelected records from test.rec:\n")
-			fmt.Println(rec.Recs2string(response.Records)) // Print the first record
-			//fmt.Println(rec.Recs2string(response.Records))
-			response2 := response.Fix(rec.Check, rec.DefaultOptions)
-			if response2.Error != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", response2.Error)
+			resRecords := file.Sel(nil, nil, rec.SelectionParams{Type: "books"}, rec.DefaultOptions)
+			resFmt, err := resRecords.Fmt("{{Title}}: Status is now {{Status}}\n", false)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error formatting records: %v\n", err)
 			} else {
-				fmt.Println("✓ Recsel found no validation errors in selected records.")
+				fmt.Println("\nUpdated records in test.rec:\n")
+				fmt.Println(resFmt)
 			}
 		}
-		fmt.Println("⏺ Recsel command complete.")
-		main()
-	case "6":
-		err := rec.Recset("test.rec", "books", "", "", []int{}, 0, false, []string{"Status"}, rec.S, "Read", false, false)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("\n✅ Recset completed successfully.\n")
-
+		fmt.Println("\n⏺ Recset command complete.")
 		main()
 	case "q", "Q", "quit", "Quit", "exit", "Exit":
 		os.Exit(0)
