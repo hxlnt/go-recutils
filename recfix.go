@@ -1,6 +1,7 @@
 package recutils
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 )
@@ -35,13 +36,12 @@ func Recfix(filename string, operation RecfixOperation, useExternalDesc bool, fo
 		default:
 			return fmt.Errorf("invalid RecfixOperation: %d", operation)
 		}
+		var stderr bytes.Buffer
 		recfixCmd := exec.Command("bash", "-c", "recfix", params)
+		recfixCmd.Stderr = &stderr
 		result, err := recfixCmd.Output()
 		if err != nil {
-			if exitError, ok := err.(*exec.ExitError); ok {
-				fmt.Printf("recfix command failed with exit code %d: %s\n", exitError.ExitCode(), string(exitError.Stderr))
-				return fmt.Errorf("recfix command failed with exit code %d", exitError.ExitCode())
-			}
+			return fmt.Errorf("recfix command failed with exit code %d", stderr.String())
 		}
 		fmt.Printf("recfix command output: %s\n", string(result))
 		return nil

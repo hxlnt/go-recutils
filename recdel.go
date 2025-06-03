@@ -1,6 +1,7 @@
 package recutils
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -49,13 +50,12 @@ func Recdel(filename string, rectype string, expr string, q string, n []int, ran
 	}
 	options = strings.TrimSpace(options)
 	params = strings.TrimSpace(params)
+	var stderr bytes.Buffer
 	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("recdel %s %s %s", options, params, filename))
+	recdelCmd.Stderr = &stderr
 	err := recdelCmd.Run()
 	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			fmt.Printf("recdel command failed with exit code %d: %s\n", exitError.ExitCode(), string(exitError.Stderr))
-			return fmt.Errorf("recdel command failed with exit code %d", exitError.ExitCode())
-		}
+		return fmt.Errorf("recdel command failed with exit code %s", stderr.String())
 	}
 	return nil
 }

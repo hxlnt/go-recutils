@@ -84,12 +84,3 @@ func Recsel(filename string, rectype string, expr string, q string, n []int, ran
 	}
 	return results, nil
 }
-
-// type Fields struct {
-// 	FieldName  string
-// 	FieldValue string
-// }
-
-// type Record struct {
-// 	Fields []Fields
-// }

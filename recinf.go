@@ -1,6 +1,7 @@
 package recutils
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -38,10 +39,12 @@ func Recinf(filename string) ([]RecinfResponse, error) {
 	if error != nil {
 		return []RecinfResponse{}, error
 	} else {
+		var stderr bytes.Buffer
 		recinfRecCmd := exec.Command("recinf", filename)
+		recinfRecCmd.Stderr = &stderr
 		output, err := recinfRecCmd.Output()
 		if err != nil {
-			return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", err)
+			return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", stderr.String())
 		}
 		reclines := strings.Split(strings.TrimSpace(string(output)), "\n")
 		recinfRes := []RecinfResponse{}
@@ -53,10 +56,12 @@ func Recinf(filename string) ([]RecinfResponse, error) {
 			recinfRes = append(recinfRes, thisRecinfRes)
 		}
 		for i, rec := range recinfRes {
+			var stderr bytes.Buffer
 			recinfDescCmd := exec.Command("recinf", "-d", "-t", rec.Record, filename)
 			output, err := recinfDescCmd.Output()
+			recinfDescCmd.Stderr = &stderr
 			if err != nil {
-				return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", err)
+				return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", stderr.String())
 			}
 			desclines := strings.Split(strings.TrimSpace(string(output)), "\n")
 			for _, line := range desclines {

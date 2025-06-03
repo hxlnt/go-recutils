@@ -1,6 +1,7 @@
 package recutils
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 )
@@ -26,11 +27,13 @@ func Recfmt(records []Record, template string, templateIsFilename bool) ([]strin
 		} else {
 			params = template
 		}
+		var stderr bytes.Buffer
 		recfmtCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfmt %s", fieldStr, params))
+		recfmtCmd.Stderr = &stderr
 		output, err := recfmtCmd.Output()
 		if err != nil {
 			fmt.Println("Error executing recfmt command:", err)
-			return responseStr, fmt.Errorf("failed to execute recfmt command: %w", err)
+			return responseStr, fmt.Errorf("failed to execute recfmt command: %w", stderr.String())
 		}
 		responseStr = append(responseStr, string(output))
 	}
