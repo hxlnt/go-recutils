@@ -28,11 +28,11 @@ type Field struct {
 }
 
 type OptionFlags struct {
-	Force           bool `json:",omitempty"`
-	NoExternal      bool `json:",omitempty"`
-	NoAuto          bool `json:",omitempty"`
-	CaseInsensitive bool `json:",omitempty"`
-	Unique          bool `json:",omitempty"`
+	Force           bool
+	NoExternal      bool
+	NoAuto          bool
+	CaseInsensitive bool
+	Unique          bool
 }
 
 var DefaultOptions OptionFlags = OptionFlags{
@@ -44,12 +44,12 @@ var DefaultOptions OptionFlags = OptionFlags{
 }
 
 type SelectionParams struct {
-	Type       string `json:",omitempty"`
-	Expression string `json:",omitempty"`
-	Quick      string `json:",omitempty"`
-	Number     []int  `json:",omitempty"`
-	Random     int    `json:",omitempty"`
-	Join       string `json:",omitempty"`
+	Type       string
+	Expression string
+	Quick      string
+	Number     []int
+	Random     int
+	Join       string
 }
 
 func Recs2string(records []Record) string {
