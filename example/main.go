@@ -17,7 +17,7 @@ func main() {
 	fmt.Println("5) recins: Re-add 'Junkyard Jam Band' to test.rec")
 	fmt.Println("6) recset: Set Status of all books in test.rec to 'Read'")
 	fmt.Println("7) recfmt: Format TV show records using template.rect")
-	fmt.Print("\nEnter the number of a function to test ('q' to quit): ")
+	fmt.Print("\nEnter the number of a function to test or 'q' to quit: ")
 	fmt.Scan(&input)
 
 	file := rec.Recfile{
@@ -65,16 +65,14 @@ func main() {
 			},
 		}
 		recStr, err := json.MarshalIndent(exampleRecords.Records, "", "  ")
-		fmt.Printf("\nRecords to format:\n%s", recStr)
+		fmt.Printf("\nRecords to format:\n%s\n", recStr)
 		result, err := exampleRecords.Fmt("template.rect", true)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
 		}
-		fmt.Println("\nFormatted output:\n")
-		for _, line := range result {
-			fmt.Println(line)
-		}
-		fmt.Println("\n⏺ Recfmt command complete.")
+		fmt.Println("\nFormatted output:")
+		fmt.Println(result)
+		fmt.Println("⏺ Recfmt command complete.")
 		main()
 	case "2":
 		response, err := rec.Recinf("test.rec")

@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
-func (recs RecordSet) Fmt(template string, templateIsFilename bool) ([]string, error) {
+func (recs RecordSet) Fmt(template string, templateIsFilename bool) (string, error) {
 	recsStr := recs2string(recs.Records)
 	var stderr bytes.Buffer
 	var params string
@@ -20,9 +19,8 @@ func (recs RecordSet) Fmt(template string, templateIsFilename bool) ([]string, e
 	recfmtCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfmt %s", recsStr, params))
 	recfmtCmd.Stderr = &stderr
 	result, err := recfmtCmd.Output()
-	response := strings.Split(string(result), "\n\n")
 	if err != nil {
 		errdetail = fmt.Errorf("Failed to execute recfmt command:\n%s", stderr.String())
 	}
-	return response, errdetail
+	return string(result), errdetail
 }
