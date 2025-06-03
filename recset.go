@@ -20,7 +20,7 @@ const (
 
 func Recset(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, fields []string, fieldaction FieldAction, actionvalue string, force bool, ignoreExternal bool) error {
 	var params, options string
-	error := validateFilepathDoesntExistOutsideCurrentDirectory(filename)
+	error := validateLocalFilepath(filename)
 	if error != nil {
 		return error
 	}

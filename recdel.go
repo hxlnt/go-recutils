@@ -4,58 +4,90 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
-func Recdel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, comment bool, force bool, ignoreExternal bool) error {
-	var params, options string
-	error := validateFilepathDoesntExistOutsideCurrentDirectory(filename)
-	if error != nil {
-		return error
+type DeleteStyle int
+
+const (
+	Remove DeleteStyle = iota
+	Comment
+)
+
+func (recs RecordSet) Del(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) RecordSet {
+	response := RecordSet{
+		Records: recs.Records,
+		Error:   recs.Error,
 	}
-	if rectype != "" {
-		params = "-t " + rectype
-	}
-	if expr != "" {
-		params += " -e \"" + expr + "\""
-	}
-	if q != "" {
-		params += " -q " + q
-	}
-	if len(n) > 0 {
-		numbers := ""
-		for _, num := range n {
-			if numbers != "" {
-				numbers += fmt.Sprintf(",%d", num)
-			} else {
-				numbers += fmt.Sprintf("%d", num)
-			}
-		}
-		params += " -n " + numbers
-	}
-	if random > 0 {
-		params += " -r " + fmt.Sprintf("%d", random)
-	}
-	if isCaseInsensitive {
-		options += " -i"
-	}
-	if comment {
-		options += " -c"
-	}
-	if force {
-		options += " --force"
-	}
-	if ignoreExternal {
-		options += " --no-external"
-	}
-	options = strings.TrimSpace(options)
-	params = strings.TrimSpace(params)
+	recsStr := recs2string(recs.Records)
 	var stderr bytes.Buffer
-	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("recdel %s %s %s", options, params, filename))
+	paramsStr, optionsStr := parseDelArgs(removeOrComment, params, options)
+	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recdel %s %s", recsStr, optionsStr, paramsStr))
 	recdelCmd.Stderr = &stderr
-	err := recdelCmd.Run()
+	result, err := recdelCmd.Output()
 	if err != nil {
-		return fmt.Errorf("recdel command failed with exit code %s", stderr.String())
+		response.Error = fmt.Errorf("recdel command failed with exit code %s", stderr.String())
 	}
-	return nil
+	response.Records = string2recs(string(result))
+	return response
+}
+
+func (recf Recfile) Del(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) Recfile {
+	response := Recfile{
+		Path:  recf.Path,
+		Error: recf.Error,
+	}
+	err := validateLocalFilepath(recf.Path)
+	if err != nil {
+		response.Error = fmt.Errorf("Filepath invalid: %s", err.Error())
+	}
+	var stderr bytes.Buffer
+	paramsStr, optionsStr := parseDelArgs(removeOrComment, params, options)
+	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("recdel %s %s %s", optionsStr, paramsStr, recf.Path))
+	recdelCmd.Stderr = &stderr
+	err = recdelCmd.Run()
+	if err != nil {
+		response.Error = fmt.Errorf("recdel command failed with exit code %s", stderr.String())
+	}
+	return response
+}
+
+func parseDelArgs(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) (string, string) {
+	var paramsStr, optionsStr string
+	if params.Type != "" {
+		paramsStr = "-t " + params.Type
+	}
+	if params.Expression != "" {
+		paramsStr += " -e \"" + params.Expression + "\""
+	}
+	if params.Quick != "" {
+		paramsStr += " -q " + params.Quick
+	}
+	if len(params.Number) > 0 {
+		numbersSlice := make([]string, len(params.Number))
+		for i, num := range params.Number {
+			numbersSlice[i] = strconv.Itoa(num)
+		}
+		numbers := strings.Join(numbersSlice, ",")
+		paramsStr += " -n " + numbers
+	}
+	if params.Random > 0 {
+		paramsStr += " -r " + fmt.Sprintf("%d", params.Random)
+	}
+	if options.CaseInsensitive {
+		optionsStr += " -i"
+	}
+	if options.Force {
+		optionsStr += " --force"
+	}
+	if options.NoExternal {
+		optionsStr += " --no-external"
+	}
+	if removeOrComment == Comment {
+		optionsStr += " -c"
+	}
+	paramsStr = strings.TrimSpace(paramsStr)
+	optionsStr = strings.TrimSpace(optionsStr)
+	return paramsStr, optionsStr
 }

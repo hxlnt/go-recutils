@@ -10,7 +10,7 @@ import (
 func Recsel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, joinfield string, sortbyfields []string, groupbyfields []string, removeDuplicates bool, force bool, ignoreExternal bool) ([]Record, error) {
 	var params, options string
 	var results []Record
-	error := validateFilepathDoesntExistOutsideCurrentDirectory(filename)
+	error := validateLocalFilepath(filename)
 	if error != nil {
 		return results, error
 	}
@@ -67,20 +67,21 @@ func Recsel(filename string, rectype string, expr string, q string, n []int, ran
 	if err != nil {
 		return results, fmt.Errorf("recset failed:\n%s", stderr.String())
 	}
-	records := strings.Split(string(output), "\n\n")
-	for _, rec := range records {
-		thisRec := Record{}
-		line := strings.Split(rec, "\n")
-		for _, l := range line {
-			if strings.TrimSpace(l) != "" {
-				thisField := Fields{}
-				tokens := strings.Split(l, ":")
-				thisField.FieldName = strings.TrimSpace(tokens[0])
-				thisField.FieldValue = strings.TrimSpace(strings.Join(tokens[1:], ":"))
-				thisRec.Fields = append(thisRec.Fields, thisField)
-			}
-		}
-		results = append(results, thisRec)
-	}
+	results = string2recs(string(output))
+	// records := strings.Split(string(output), "\n\n")
+	// for _, rec := range records {
+	// 	thisRec := Record{}
+	// 	line := strings.Split(rec, "\n")
+	// 	for _, l := range line {
+	// 		if strings.TrimSpace(l) != "" {
+	// 			thisField := Field{}
+	// 			tokens := strings.Split(l, ":")
+	// 			thisField.Name = strings.TrimSpace(tokens[0])
+	// 			thisField.Value = strings.TrimSpace(strings.Join(tokens[1:], ":"))
+	// 			thisRec.Fields = append(thisRec.Fields, thisField)
+	// 		}
+	// 	}
+	// 	results = append(results, thisRec)
+	// }
 	return results, nil
 }

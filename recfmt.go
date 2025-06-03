@@ -6,21 +6,21 @@ import (
 	"os/exec"
 )
 
-type Fields struct {
-	FieldName  string
-	FieldValue string
-}
+// type Fields struct {
+// 	FieldName  string
+// 	FieldValue string
+// }
 
-type Record struct {
-	Fields []Fields
-}
+// type Record struct {
+// 	Fields []Fields
+// }
 
 func Recfmt(records []Record, template string, templateIsFilename bool) ([]string, error) {
 	var responseStr []string
 	for _, record := range records {
 		var fieldStr, params string
 		for _, field := range record.Fields {
-			fieldStr += fmt.Sprintf("%s: %s%s", field.FieldName, field.FieldValue, "\n")
+			fieldStr += fmt.Sprintf("%s: %s%s", field.Name, field.Value, "\n")
 		}
 		if templateIsFilename {
 			params = "--f " + template

@@ -9,7 +9,7 @@ import (
 
 func Recins(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, record Record, force bool, ignoreExternal bool, ignoreAuto bool) error {
 	var params, options string
-	error := validateFilepathDoesntExistOutsideCurrentDirectory(filename)
+	error := validateLocalFilepath(filename)
 	if error != nil {
 		return error
 	}
@@ -41,7 +41,7 @@ func Recins(filename string, rectype string, expr string, q string, n []int, ran
 	}
 	if len(record.Fields) > 0 {
 		for _, field := range record.Fields {
-			options += fmt.Sprintf(" -f %s -v \"%s\"", field.FieldName, field.FieldValue)
+			options += fmt.Sprintf(" -f %s -v \"%s\"", field.Name, field.Value)
 		}
 	}
 	if force {

@@ -9,71 +9,46 @@ See the [example folder](example) to run sample code that tests all currently-im
 TODO; mdb2rec may not be implemented.
 
 ### recdel
-**Recdel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, comment bool, force bool, ignoreExternal bool)** runs the specified `recdel` operation and returns an error if warranted. To avoid issues with values containing single quotemarks, expressions passed into `expr` may need doubly-escaped quotemarks, *e.g.,*:
+
 ```go
-rec.Recdel("test.rec", "books", "Title=\\\"American Girl's Handy Book, The\\\"", "", []int{}, 0, true, true, false, false)
+func (recs RecordSet) del(removeOrComment DeleteStyle, options OptionFlags) RecordSet
+func (file Recfile) del(removeOrComment DeleteStyle, options OptionFlags) Recfile
 ```
 
 ### recfix
-**Recfix(filename string, operation RecfixOperation, useExternalDesc bool, force bool)** runs the specified `recfix` operation and returns an error if warranted. `RecfixOperation` may have the value `Auto`, `Check`, or `Sort`. Decryption/encryption operations are not currently supported.
+
+```go
+func (recs RecordSet) fix(action FixAction, options OptionsFlags) RecordSet
+func (file Recfile) fix(action FixAction, options OptionsFlags) Recfile
+```
 
 ### recfmt
-**Recfmt(records []Record, template string, templateIsFilename bool)** formats a given set of records and returns an array of strings, one for each record, that have been passed through the template. If `template` is a filename, set `templateIsFilename` to `true`. Records have the following signature:
 
 ```go
-type Record struct {
-	Fields []Fields
-}
-
-type Fields struct {
-	FieldName  string
-	FieldValue string
-}
+func (recs RecordSet) fmt(template string, isTemplateFilename bool) ([]string, error)
 ```
 
-### recinf 
-**Recinf(filename string)** returns an array of objects for each record definition (`%rec`) in the provided file and an error if warranted. Objects follow the structure shown below.
+### recfix
+
 ```go
-type RecinfResponse struct {
-	Record      string
-	Count       int
-	Rectypedefs []Rectype 
-	Doc         []string
-	Rectypes    []Rectype
-	Key         []string
-	Mandatory   []string
-	Singular    []string
-	Allowed     []string
-	Prohibited  []string
-	Unique      []string
-	Auto        []string
-	Sort        []string
-	Comments    []string
-}
-
-type Rectype struct {
-	Name  string
-	Value string
-	Enum  []string `json:",omitempty"`
-}
+func (file Recfile).inf() Recinfo
 ```
-As this object returns both descriptors and counts, there is no need to use `recinf` flags `-d` and `-n`.
 
 ### recins
-**Recins(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, record Record, force bool, ignoreExternal bool, ignoreAuto bool)** inserts a record with the following signature:
-```go
-type Record struct {
-	Fields []Fields
-}
 
-type Fields struct {
-	FieldName  string
-	FieldValue string
-}
+```go
+func (recs RecordSet) ins(newRecords RecordSet, options OptionsFlags) RecordSet
+func (file Recfile) ins(newRecords RecordSet, options OptionsFlags) Recfile
 ```
 
 ### recsel
-**Recsel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, joinfield string, sortbyfields []string, groupbyfields []string, removeDuplicates bool, force bool, ignoreExternal bool)** performs recsel. Returns an array of records and an error if applicable. Print flags are not used given the structured return value.
+
+```go
+func (file Recfile) sel(params SelectionParams, options OptionsFlags) RecordSet
+```
 
 ### recset
-**Recset(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, fields []string, fieldaction FieldAction, actionvalue string, force bool, ignoreExternal bool)** performs recset. Valid FieldAction values are `s`, `a`, `S`, `r`, `d`, and `c`, corresponding to the field action flags for `recset`. 
+
+```go
+func (file Recfile) set(params SelectionParams, options OptionsFlags) Recfile
+```
