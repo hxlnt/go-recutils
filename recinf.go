@@ -14,51 +14,52 @@ type Rectype struct {
 	Enum  []string `json:",omitempty"`
 }
 
-type RecinfResponse struct {
-	Record      string
+type Recinfo struct {
+	RecName     string
 	Count       int
-	Rectypedefs []Rectype
 	Doc         []string
+	Rectypedefs []Rectype
 	Rectypes    []Rectype
 	Key         []string
 	Mandatory   []string
 	Singular    []string
 	Allowed     []string
-	Prohibited  []string
 	Unique      []string
+	Prohibited  []string
 	Auto        []string
 	Sort        []string
 	Comments    []string
 }
 
-func Recinf(filename string) ([]RecinfResponse, error) {
-	error := validateLocalFilepath(filename)
-	if error != nil {
-		return []RecinfResponse{}, error
+func (recf Recfile) Inf() ([]Recinfo, error) {
+	info := []Recinfo{}
+	err := validateLocalFilepath(recf.Path)
+	if err != nil {
+		return info, fmt.Errorf("Filepath invalid: %s", err.Error())
 	} else {
 		var stderr bytes.Buffer
-		recinfRecCmd := exec.Command("recinf", filename)
+		recinfRecCmd := exec.Command("recinf", recf.Path)
 		recinfRecCmd.Stderr = &stderr
 		output, err := recinfRecCmd.Output()
 		if err != nil {
-			return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", stderr.String())
+			return info, fmt.Errorf("failed to execute recinf command: %s", stderr.String())
 		}
 		reclines := strings.Split(strings.TrimSpace(string(output)), "\n")
-		recinfRes := []RecinfResponse{}
+		recinfRes := []Recinfo{}
 		for _, line := range reclines {
-			thisRecinfRes := RecinfResponse{}
+			thisRecinfRes := Recinfo{}
 			lineparts := strings.Split(line, " ")
 			thisRecinfRes.Count, _ = strconv.Atoi(strings.TrimSpace(lineparts[0]))
-			thisRecinfRes.Record = strings.TrimSpace(strings.Join(lineparts[1:], " "))
+			thisRecinfRes.RecName = strings.TrimSpace(strings.Join(lineparts[1:], " "))
 			recinfRes = append(recinfRes, thisRecinfRes)
 		}
-		for i, rec := range recinfRes {
+		for i, record := range recinfRes {
 			var stderr bytes.Buffer
-			recinfDescCmd := exec.Command("recinf", "-d", "-t", rec.Record, filename)
+			recinfDescCmd := exec.Command("recinf", "-d", "-t", record.RecName, recf.Path)
 			output, err := recinfDescCmd.Output()
 			recinfDescCmd.Stderr = &stderr
 			if err != nil {
-				return []RecinfResponse{}, fmt.Errorf("failed to execute recinf command: %w", stderr.String())
+				return []Recinfo{}, fmt.Errorf("failed to execute recinf command: %s", stderr.String())
 			}
 			desclines := strings.Split(strings.TrimSpace(string(output)), "\n")
 			for _, line := range desclines {
@@ -72,6 +73,13 @@ func Recinf(filename string) ([]RecinfResponse, error) {
 						rectype.Enum = rectypestr[2:]
 					}
 					recinfRes[i].Rectypes = append(recinfRes[i].Rectypes, rectype)
+				} else if strings.HasPrefix(strings.ToLower(line), "%typedef:") {
+					rectypedefstr := strings.Split(strings.TrimSpace(line[9:]), " ")
+					rectypedef := Rectype{
+						Name:  rectypedefstr[0],
+						Value: rectypedefstr[1],
+					}
+					recinfRes[i].Rectypedefs = append(recinfRes[i].Rectypedefs, rectypedef)
 				} else if strings.HasPrefix(strings.ToLower(line), "%doc:") {
 					recinfRes[i].Doc = append(recinfRes[i].Doc, strings.TrimSpace(line[5:]))
 				} else if strings.HasPrefix(strings.ToLower(line), "%key:") {

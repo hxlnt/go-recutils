@@ -75,12 +75,12 @@ func main() {
 		fmt.Println("⏺ Recfmt command complete.")
 		main()
 	case "2":
-		response, err := rec.Recinf("test.rec")
+		response, err := file.Inf()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("\nProcessing test.rec...\n")
+		fmt.Println("\nResult:\n")
 		jsonOutput, err := json.MarshalIndent(response, "", "  ")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error formatting JSON: %v\n", err)
@@ -90,26 +90,27 @@ func main() {
 		fmt.Println("\n✅ Recinf completed successfully.\n")
 		main()
 	case "5":
-		response, _ := rec.Recinf("test.rec")
-		fmt.Println("\nBooks count: ", response[0].Count)
-		fmt.Println("\nAdding a new record to test.rec...\n")
-		records := []rec.Record{
-			{
-				Fields: []rec.Field{
-					{Name: "Title", Value: "Junkyard Jam Band"},
-					{Name: "Status", Value: "Not-reading"},
-					{Name: "Id", Value: "jjb"},
-				},
-			},
-		}
-		err := rec.Recins("test.rec", "books", "", "", []int{}, 0, true, records[0], false, false, false)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		response2, _ := rec.Recinf("test.rec")
-		fmt.Println("\nNew books count: ", response2[0].Count)
-		fmt.Println("\n✅ Recins completed successfully.\n")
+		// response, _ := rec.Recinf("test.rec")
+		// fmt.Println("\nBooks count: ", response[0].Count)
+		// fmt.Println("\nAdding a new record to test.rec...\n")
+		// records := []rec.Record{
+		// 	{
+		// 		Fields: []rec.Field{
+		// 			{Name: "Title", Value: "Junkyard Jam Band"},
+		// 			{Name: "Status", Value: "Not-reading"},
+		// 			{Name: "Id", Value: "jjb"},
+		// 		},
+		// 	},
+		// }
+		// err := rec.Recins("test.rec", "books", "", "", []int{}, 0, true, records[0], false, false, false)
+		// if err != nil {
+		// 	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		// 	os.Exit(1)
+		// }
+		// response2, _ := rec.Recinf("test.rec")
+		// fmt.Println("\nNew books count: ", response2[0].Count)
+		// fmt.Println("\n✅ Recins completed successfully.\n")
+		main()
 	case "3":
 		results, err := rec.Recsel("test.rec", "books", "", "", []int{}, 1, false, "", []string{"PageCount"}, []string{}, false, false, false)
 		if err != nil {
