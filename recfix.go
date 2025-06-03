@@ -20,7 +20,7 @@ func (recs RecordSet) Fix(action FixAction, options OptionFlags) RecordSet {
 		Records: recs.Records,
 		Error:   recs.Error,
 	}
-	recsStr := recs2string(recs.Records)
+	recsStr := Recs2string(recs.Records)
 	var stderr bytes.Buffer
 	optionsStr := parseFixArgs(action, options)
 	recfixCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recfix %s", recsStr, optionsStr))

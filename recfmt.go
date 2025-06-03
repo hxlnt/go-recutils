@@ -7,7 +7,7 @@ import (
 )
 
 func (recs RecordSet) Fmt(template string, templateIsFilename bool) (string, error) {
-	recsStr := recs2string(recs.Records)
+	recsStr := Recs2string(recs.Records)
 	var stderr bytes.Buffer
 	var params string
 	var errdetail error

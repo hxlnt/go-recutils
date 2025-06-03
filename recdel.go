@@ -15,15 +15,15 @@ const (
 	Comment
 )
 
-func (recs RecordSet) Del(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) RecordSet {
+func (recs RecordSet) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) RecordSet {
 	response := RecordSet{
 		Records: recs.Records,
 		Error:   recs.Error,
 	}
-	recsStr := recs2string(recs.Records)
+	recsStr := Recs2string(recs.Records)
 	var stderr bytes.Buffer
-	paramsStr, optionsStr := parseDelArgs(removeOrComment, params, options)
-	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recdel %s %s", recsStr, optionsStr, paramsStr))
+	paramsStr, optionsStr := parseDelArgs(params, options, removeOrComment)
+	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | recdel %s %s", recsStr, paramsStr, optionsStr))
 	recdelCmd.Stderr = &stderr
 	result, err := recdelCmd.Output()
 	if err != nil {
@@ -33,7 +33,7 @@ func (recs RecordSet) Del(removeOrComment DeleteStyle, params SelectionParams, o
 	return response
 }
 
-func (recf Recfile) Del(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) Recfile {
+func (recf Recfile) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) Recfile {
 	response := Recfile{
 		Path:  recf.Path,
 		Error: recf.Error,
@@ -43,7 +43,7 @@ func (recf Recfile) Del(removeOrComment DeleteStyle, params SelectionParams, opt
 		response.Error = fmt.Errorf("Filepath invalid: %s", err.Error())
 	}
 	var stderr bytes.Buffer
-	paramsStr, optionsStr := parseDelArgs(removeOrComment, params, options)
+	paramsStr, optionsStr := parseDelArgs(params, options, removeOrComment)
 	recdelCmd := exec.Command("bash", "-c", fmt.Sprintf("recdel %s %s %s", optionsStr, paramsStr, recf.Path))
 	recdelCmd.Stderr = &stderr
 	err = recdelCmd.Run()
@@ -53,7 +53,7 @@ func (recf Recfile) Del(removeOrComment DeleteStyle, params SelectionParams, opt
 	return response
 }
 
-func parseDelArgs(removeOrComment DeleteStyle, params SelectionParams, options OptionFlags) (string, string) {
+func parseDelArgs(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) (string, string) {
 	var paramsStr, optionsStr string
 	if params.Type != "" {
 		paramsStr = "-t " + params.Type
@@ -73,7 +73,7 @@ func parseDelArgs(removeOrComment DeleteStyle, params SelectionParams, options O
 		paramsStr += " -n " + numbers
 	}
 	if params.Random > 0 {
-		paramsStr += " -r " + fmt.Sprintf("%d", params.Random)
+		paramsStr += " -m " + fmt.Sprintf("%d", params.Random)
 	}
 	if options.CaseInsensitive {
 		optionsStr += " -i"

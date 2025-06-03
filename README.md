@@ -11,34 +11,34 @@ TODO; mdb2rec may not be implemented.
 ### recdel
 
 ```go
-func (recs RecordSet) del(removeOrComment DeleteStyle, options OptionFlags) RecordSet
-func (file Recfile) del(removeOrComment DeleteStyle, options OptionFlags) Recfile
+func (recs RecordSet) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) RecordSet
+func (file Recfile) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) Recfile
 ```
 
 ### recfix
 
 ```go
-func (recs RecordSet) fix(action FixAction, options OptionsFlags) RecordSet
-func (file Recfile) fix(action FixAction, options OptionsFlags) Recfile
+func (recs RecordSet) Fix(action FixAction, options OptionsFlags) RecordSet
+func (file Recfile) Fix(action FixAction, options OptionsFlags) Recfile
 ```
 
 ### recfmt
 
 ```go
-func (recs RecordSet) fmt(template string, isTemplateFilename bool) ([]string, error)
+func (recs RecordSet) Fmt(template string, isTemplateFilename bool) (string, error)
 ```
 
-### recfix
+### recinf
 
 ```go
-func (file Recfile).inf() Recinfo
+func (file Recfile).Inf() ([]Recinfo, error)
 ```
 
 ### recins
 
 ```go
-func (recs RecordSet) ins(newRecords RecordSet, options OptionsFlags) RecordSet
-func (file Recfile) ins(newRecords RecordSet, options OptionsFlags) Recfile
+func (recs RecordSet) Ins(newRecords RecordSet, params SelectionParams, options OptionsFlags) RecordSet
+func (file Recfile) Ins(newRecords RecordSet, params SelectionParams, options OptionsFlags) Recfile
 ```
 
 ### recsel

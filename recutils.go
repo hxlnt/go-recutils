@@ -52,7 +52,7 @@ type SelectionParams struct {
 	Join       string `json:",omitempty"`
 }
 
-func recs2string(records []Record) string {
+func Recs2string(records []Record) string {
 	var result string
 	for _, record := range records {
 		for _, field := range record.Fields {
