@@ -8,47 +8,54 @@ See the [example folder](example) to run sample code that tests all currently-im
 ### csv2rec, mdb2rec, rec2csv
 TODO; mdb2rec may not be implemented.
 
-### recdel
-
-```go
-func (recs RecordSet) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) RecordSet
-func (file Recfile) Del(params SelectionParams, options OptionFlags, removeOrComment DeleteStyle) Recfile
-```
-
-### recfix
-
-```go
-func (recs RecordSet) Fix(action FixAction, options OptionsFlags) RecordSet
-func (file Recfile) Fix(action FixAction, options OptionsFlags) Recfile
-```
-
-### recfmt
-
-```go
-func (recs RecordSet) Fmt(template string, isTemplateFilename bool) (string, error)
-```
-
 ### recinf
 
 ```go
-func (file Recfile).Inf() ([]Recinfo, error)
-```
-
-### recins
-
-```go
-func (recs RecordSet) Ins(newRecords RecordSet, params SelectionParams, options OptionsFlags) RecordSet
-func (file Recfile) Ins(newRecords RecordSet, params SelectionParams, options OptionsFlags) Recfile
+recinfo, err = recfile.Inf()
 ```
 
 ### recsel
 
 ```go
-func (file Recfile) sel(params SelectionParams, options OptionsFlags) RecordSet
+options = rec.DefaultOptions
+params = rec.SelectionParams{Type: "books", Expression: "Title='Junkyard Jam Band'"}
+recordSet = recfile.Sel(params, options)
+recordSeterror = recordSet.Error
+```
+
+### recfix
+
+```go
+options = rec.OptionFlags{CaseInsensitive: true}
+newRecordSet = recordSet.Fix(rec.Check, rec.DefaultOptions)
+newRecfile = recfile.Fix(rec.Check, rec.DefaultOptions)
+recfileError = newRecfile.Error
+```
+
+### recdel
+
+```go
+newRecordSet = recordSet.Del(params, rec.DefaultOptions, rec.Remove)
+newRecfile = recfile.Del(params, options, rec.Comment) 
+```
+
+### recins
+
+```go
+anotherRecordSet = recordSet.Ins(newRecordSet, params, options)
+newRecfile = recfile.Ins(newRecordSet, params, options)
 ```
 
 ### recset
 
 ```go
-func (file Recfile) set(params SelectionParams, options OptionsFlags) Recfile
+fields = []string{"Status"}
+action = rec.FieldAction{ActionType: "SetAdd", ActionValue: "Read"}
+newRecfile := recFile.Set(fields, action, params, options)
+```
+
+### recfmt
+
+```go
+templateOutput, err = recordSet.Fmt("{{Title}}: {{Subtitle}}", false)
 ```
