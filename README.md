@@ -73,7 +73,7 @@ type Fields struct {
 ```
 
 ### recsel
-TODO
+**Recsel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, joinfield string, sortbyfields []string, groupbyfields []string, removeDuplicates bool, force bool, ignoreExternal bool)** performs recsel. Returns an array of records and an error if applicable. Print flags are not used given the structured return value.
 
 ### recset
-**func Recset(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, fields []string, fieldaction FieldAction, actionvalue string, force bool, ignoreExternal bool)** performs recset. Valid FieldAction values are `s`, `a`, `S`, `r`, `d`, and `c`, corresponding to the field action flags for `recset`. 
+**Recset(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, fields []string, fieldaction FieldAction, actionvalue string, force bool, ignoreExternal bool)** performs recset. Valid FieldAction values are `s`, `a`, `S`, `r`, `d`, and `c`, corresponding to the field action flags for `recset`. 
