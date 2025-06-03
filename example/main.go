@@ -100,7 +100,18 @@ func main() {
 		fmt.Println("\nNew books count: ", response2[0].Count)
 		fmt.Println("\n✅ Recins completed successfully.\n")
 	case "6":
-		fmt.Println("This function is not implemented yet.")
+		results, err := rec.Recsel("test.rec", "books", "", "", []int{}, 1, false, "", []string{"PageCount"}, []string{}, false, false, false)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("\nSelected records from test.rec:\n")
+		for _, rec := range results {
+			for _, field := range rec.Fields {
+				fmt.Printf("%s: %s\n", field.FieldName, field.FieldValue)
+			}
+		}
+		fmt.Println("\n✅ Recsel completed successfully.\n")
 		main()
 	case "7":
 		err := rec.Recset("test.rec", "books", "", "", []int{}, 0, false, []string{"Status"}, rec.S, "Read", false, false)
