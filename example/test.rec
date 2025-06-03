@@ -1,51 +1,12 @@
-%rec: books
-%doc: Book collection
-%typedef: image line
-%type: Title line
-%type: Subtitle line
-%type: PublicationYear int
-%type: Status enum In-reading-queue Not-reading Read
-%type: PageCount int
-%type: Image image
-%type: UpdatedAt date
-%key: Id
-%mandatory: Title
-%singular: Title
-%allowed: UpdatedAt Subtitle PublicationYear Status PageCount Image Note
-%unique: Title UpdatedAt Subtitle PublicationYear Status PageCount
-%auto: UpdatedAt
-%sort: Status Title
-
-Id: afm
-Title: Arduino for Musicians
-Subtitle: A complete guide to Arduino and Teensy microcontrollers
-PublicationYear: 2016
-Status: Not-reading
-UpdatedAt: 2025-06-01T00:47:00-05:00
-Image: https://covers.openlibrary.org/b/isbn/9780199309320-L.jpg 
-
-Id: aghb
-Title: American Girl's Handy Book, The
-Status: In-reading-queue
-PageCount: 474
-Note: Burying flowers in sand to preserve them? Interesting...
-Note: The recommendation for a girls' walking group is to start with just an easy 3-mile walk before working up to a 10-mile daily walk.
-
-UpdatedAt: Mon, 02 Jun 2025 16:08:48 -0500
-Title: Junkyard Jam Band
-Status: Not-reading
-Id: jjb
-
 %rec: tvshows
-%doc: TV shows I've watched
-%typedef: image line
-%type: Id line
+%doc: TV shows
+%type: Id int
 %type: Title line
 # Add network?
-%type: Image image
 %type: SeasonCount int
-# Add UpdatedAt timestamp?
+# Add CreatedAt timestamp?
 %key: Id
+%auto: Id
 %mandatory: Title
 %singular: Title
 %allowed: Title Image SeasonCount
@@ -54,8 +15,49 @@ Id: jjb
 
 Title: King of the Hill
 SeasonCount: 13
-Id: koth
+Id: 1
 
 Title: Look Around You
 SeasonCount: 2
-Id: lar
+Id: 0
+
+%rec: books
+%doc: Books
+%typedef: image line
+%type: Title line
+%type: PublicationYear int
+%type: Status enum In-reading-queue Not-reading Read
+%type: PageCount int
+%type: Image image
+%type: CreatedAt date
+%type: Note line
+%type: Id int
+%key: Id
+%mandatory: Title
+%singular: Title
+%allowed: UpdatedAt PublicationYear Status PageCount Image Note CreatedAt
+%unique: Title UpdatedAt PublicationYear Status PageCount
+%auto: Id
+%sort: Status Title
+
+Id: 0
+Title: Arduino for Musicians
+PublicationYear: 2016
+Status: Not-reading
+Image: https://covers.openlibrary.org/b/isbn/9780199309320-L.jpg 
+CreatedAt: 2025-06-01T00:47:00-05:00
+
+Id: 1
+Title: American Girl's Handy Book, The
+PublicationYear: 1887
+Status: In-reading-queue
+PageCount: 474
+Note: Burying flowers in sand to preserve them? Interesting...
+Note: The recommendation for a girls' walking group is to start with just an easy 3-mile walk before working up to a 10-mile daily walk.
+CreatedAt: 2025-06-03T11:36:32-05:00
+
+Title: Junkyard Jam Band
+Status: Not-reading
+Id: 2
+PublicationYear: 2016
+CreatedAt: 2025-06-03T11:32:16-05:00

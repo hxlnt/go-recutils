@@ -4,83 +4,66 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
-func Recsel(filename string, rectype string, expr string, q string, n []int, random int, isCaseInsensitive bool, joinfield string, sortbyfields []string, groupbyfields []string, removeDuplicates bool, force bool, ignoreExternal bool) ([]Record, error) {
-	var params, options string
-	var results []Record
-	error := validateFilepathDoesntExistOutsideCurrentDirectory(filename)
-	if error != nil {
-		return results, error
+func (recf Recfile) Sel(sortBy []string, groupBy []string, params SelectionParams, options OptionFlags) RecordSet {
+	var args []string
+	response := RecordSet{}
+	if sortBy != nil {
+		args = append(args, "-S", strings.Join(sortBy, ","))
 	}
-	if rectype != "" {
-		params = "-t " + rectype
+	if groupBy != nil {
+		args = append(args, "-G", strings.Join(groupBy, ","))
 	}
-	if expr != "" {
-		params += " -e \"" + expr + "\""
+	if params.Type != "" {
+		args = append(args, "-t", params.Type)
 	}
-	if q != "" {
-		params += " -q " + q
+	if params.Expression != "" {
+		args = append(args, "-e", params.Expression)
 	}
-	if joinfield != "" {
-		params += " -j " + joinfield
+	if params.Quick != "" {
+		args = append(args, "-q", params.Quick)
 	}
-	if len(sortbyfields) > 0 {
-		sortFields := strings.Join(sortbyfields, ",")
-		params += " -S " + sortFields
+	if params.Join != "" {
+		args = append(args, "-j", params.Join)
 	}
-	if len(n) > 0 {
-		numbers := ""
-		for _, num := range n {
-			if numbers != "" {
-				numbers += fmt.Sprintf(",%d", num)
-			} else {
-				numbers += fmt.Sprintf("%d", num)
-			}
+	if len(params.Number) > 0 {
+		numbersSlice := make([]string, len(params.Number))
+		for i, num := range params.Number {
+			numbersSlice[i] = strconv.Itoa(num)
 		}
-		params += " -n " + numbers
+		args = append(args, "-n", strings.Join(numbersSlice, ","))
 	}
-	if random > 0 {
-		params += " -m " + fmt.Sprintf("%d", random)
+	if params.Random > 0 {
+		args = append(args, "-m", fmt.Sprintf("%d", params.Random))
 	}
-	if isCaseInsensitive {
-		options += " -i"
+	if options.CaseInsensitive {
+		args = append(args, "-i")
 	}
-	if len(groupbyfields) > 0 {
-		fieldStr := strings.Join(groupbyfields, ",")
-		options += fmt.Sprintf(" -G %s", fieldStr)
-	}
-	if force {
-		options += " --force"
-	}
-	if ignoreExternal {
-		options += " --no-external"
-	}
-	options = strings.TrimSpace(options)
-	params = strings.TrimSpace(params)
+	args = append(args, recf.Path)
+	recselCmd := exec.Command("recsel", args...)
 	var stderr bytes.Buffer
-	recselCmd := exec.Command("bash", "-c", fmt.Sprintf("recsel %s %s %s", options, params, filename))
-	fmt.Println(recselCmd.String())
 	recselCmd.Stderr = &stderr
-	output, err := recselCmd.Output()
+	result, err := recselCmd.Output()
 	if err != nil {
-		return results, fmt.Errorf("recset failed:\n%s", stderr.String())
+		response.Error = fmt.Errorf("Failed to execute recsel command:\n%s", stderr.String())
 	}
-	records := strings.Split(string(output), "\n\n")
-	for _, rec := range records {
-		thisRec := Record{}
-		line := strings.Split(rec, "\n")
-		for _, l := range line {
-			if strings.TrimSpace(l) != "" {
-				thisField := Fields{}
-				tokens := strings.Split(l, ":")
-				thisField.FieldName = strings.TrimSpace(tokens[0])
-				thisField.FieldValue = strings.TrimSpace(strings.Join(tokens[1:], ":"))
-				thisRec.Fields = append(thisRec.Fields, thisField)
-			}
-		}
-		results = append(results, thisRec)
-	}
-	return results, nil
+	response.Records = string2recs(string(result))
+	return response
+}
+
+func GroupBy(strings []string) []string {
+	// if strings == nil {
+	// 	return []string{}
+	// }
+	return strings
+}
+
+func SortBy(strings []string) []string {
+	// if strings == nil {
+	// 	return []string{}
+	// }
+	return strings
 }
