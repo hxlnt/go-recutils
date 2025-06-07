@@ -87,7 +87,7 @@ func (recf Recfile) Inf() ([]Recinfo, error) {
 				} else if strings.HasPrefix(strings.ToLower(line), "%mandatory:") {
 					recinfRes[i].Mandatory = strings.Split(strings.TrimSpace(line[11:]), " ")
 				} else if strings.HasPrefix(strings.ToLower(line), "%singular:") {
-					recinfRes[i].Mandatory = strings.Split(strings.TrimSpace(line[10:]), " ")
+					recinfRes[i].Singular = strings.Split(strings.TrimSpace(line[10:]), " ")
 				} else if strings.HasPrefix(strings.ToLower(line), "%allowed:") {
 					recinfRes[i].Allowed = strings.Split(strings.TrimSpace(line[9:]), " ")
 				} else if strings.HasPrefix(strings.ToLower(line), "%prohibited:") {
