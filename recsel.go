@@ -55,15 +55,9 @@ func (recf Recfile) Sel(sortBy []string, groupBy []string, params SelectionParam
 }
 
 func GroupBy(strings []string) []string {
-	// if strings == nil {
-	// 	return []string{}
-	// }
 	return strings
 }
 
 func SortBy(strings []string) []string {
-	// if strings == nil {
-	// 	return []string{}
-	// }
 	return strings
 }
